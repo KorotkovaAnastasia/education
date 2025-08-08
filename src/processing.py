@@ -1,10 +1,12 @@
-def filter_by_state(data: list[dict], state: str = "EXECUTED") -> list[dict]:
+from datetime import datetime
+
+
+def filter_by_state(transaction: list[dict], state: str = "EXECUTED") -> list[dict]:
     """
     принимает список словарей и опционально значение для ключа state.
     """
-    return [item for item in data if item.get("state") == state]
+    return [item for item in transaction if item.get("state") == state]
 
-from datetime import datetime
 
 def sort_by_date(transactions: list[dict], reverse: bool = True) -> list[dict]:
     """
