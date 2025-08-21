@@ -67,6 +67,7 @@ pytest --cov=src --cov-report=html
 
 ## Документация
 
+
 ### Основные материалы
 - [API Reference](docs/API.md) - полное описание всех функций и их параметров
 - [Data Format Standard](docs/DATA_FORMAT.md) - требования к формату входных и выходных данных
