@@ -5,7 +5,7 @@ from src.generators import card_number_generator, filter_by_currency, transactio
 
 @pytest.fixture
 def sample_transactions():
-    """Фикстура с тестовыми транзакциями."""
+    """Фикстура с тестовыми транзакциями"""
     return [
         {
             "id": 1,
@@ -32,13 +32,13 @@ def sample_transactions():
 
 @pytest.fixture
 def empty_transactions():
-    """Фикстура с пустым списком транзакций."""
+    """Фикстура с пустым списком транзакций"""
     return []
 
 
 @pytest.fixture
 def transactions_without_currency():
-    """Фикстура с транзакциями без валюты."""
+    """Фикстура с транзакциями без валюты"""
     return [
         {"id": 1, "description": "No operationAmount"},
         {"id": 2, "operationAmount": {"amount": "100.00"}},
@@ -50,7 +50,7 @@ class TestFilterByCurrency:
     """Тесты для функции filter_by_currency."""
 
     def test_filter_usd_transactions(self, sample_transactions):
-        """Тест фильтрации USD транзакций."""
+        """Тест фильтрации USD транзакций"""
         usd_transactions = list(filter_by_currency(sample_transactions, "USD"))
 
         assert len(usd_transactions) == 2
@@ -58,7 +58,7 @@ class TestFilterByCurrency:
         assert {txn["id"] for txn in usd_transactions} == {1, 3}
 
     def test_filter_eur_transactions(self, sample_transactions):
-        """Тест фильтрации EUR транзакций."""
+        """Тест фильтрации EUR транзакций"""
         eur_transactions = list(filter_by_currency(sample_transactions, "EUR"))
 
         assert len(eur_transactions) == 1
@@ -66,42 +66,42 @@ class TestFilterByCurrency:
         assert eur_transactions[0]["operationAmount"]["currency"]["code"] == "EUR"
 
     def test_filter_nonexistent_currency(self, sample_transactions):
-        """Тест фильтрации несуществующей валюты."""
+        """Тест фильтрации несуществующей валюты"""
         gbp_transactions = list(filter_by_currency(sample_transactions, "GBP"))
         assert len(gbp_transactions) == 0
 
     def test_empty_transactions_list(self, empty_transactions):
-        """Тест с пустым списком транзакций."""
+        """Тест с пустым списком транзакций"""
         result = list(filter_by_currency(empty_transactions, "USD"))
         assert len(result) == 0
 
     def test_transactions_without_currency(self, transactions_without_currency):
-        """Тест с транзакциями без информации о валюте."""
+        """Тест с транзакциями без инф о валюте"""
         result = list(filter_by_currency(transactions_without_currency, "USD"))
         assert len(result) == 0
 
     def test_generator_behavior(self, sample_transactions):
-        """Тест поведения генератора (поочередная выдача)."""
+        """Тест поведения генератора"""
         generator = filter_by_currency(sample_transactions, "USD")
 
         # Первый вызов
         first = next(generator)
         assert first["id"] == 1
 
-        # Второй вызов
+        # Второй
         second = next(generator)
         assert second["id"] == 3
 
-        # Дальше должно быть StopIteration
+        # Дальше StopIteration
         with pytest.raises(StopIteration):
             next(generator)
 
 
 class TestTransactionDescriptions:
-    """Тесты для функции transaction_descriptions."""
+    """Тесты для функции transaction_descriptions"""
 
     def test_descriptions_extraction(self, sample_transactions):
-        """Тест извлечения описаний транзакций."""
+        """Тест извлечения описаний транзакций"""
         descriptions = list(transaction_descriptions(sample_transactions))
 
         expected = ["Test USD transaction", "Test EUR transaction", "Another USD transaction", "Test RUB transaction"]
@@ -109,12 +109,12 @@ class TestTransactionDescriptions:
         assert descriptions == expected
 
     def test_empty_transactions(self, empty_transactions):
-        """Тест с пустым списком транзакций."""
+        """Тест с пустым списком транзакций"""
         descriptions = list(transaction_descriptions(empty_transactions))
         assert descriptions == []
 
     def test_transactions_without_description(self):
-        """Тест с транзакциями без описания."""
+        """Тест с транзакциями без описания"""
         transactions = [
             {"id": 1, "operationAmount": {"amount": "100.00"}},
             {"id": 2, "description": "Has description"},
@@ -125,7 +125,7 @@ class TestTransactionDescriptions:
         assert descriptions == ["", "Has description", ""]
 
     def test_generator_behavior(self, sample_transactions):
-        """Тест поведения генератора описаний."""
+        """Тест поведения генератора описаний"""
         generator = transaction_descriptions(sample_transactions)
 
         assert next(generator) == "Test USD transaction"
@@ -138,11 +138,11 @@ class TestTransactionDescriptions:
 
 
 class TestCardNumberGenerator:
-    """Тесты для генератора номеров карт."""
+    """Тесты для генератора номеров карт"""
 
     @pytest.mark.parametrize("start,end,expected_count", [(1, 5, 5), (9995, 10000, 6), (1, 1, 1), (123, 123, 1)])
     def test_range_generation(self, start, end, expected_count):
-        """Тест генерации в различных диапазонах."""
+        """Тест генерации в различных диапазонах"""
         numbers = list(card_number_generator(start, end))
 
         assert len(numbers) == expected_count
@@ -158,12 +158,12 @@ class TestCardNumberGenerator:
         ],
     )
     def test_number_formatting(self, number, expected_format):
-        """Тест форматирования отдельных номеров."""
+        """Тест форматирования отдельных номеров"""
         result = list(card_number_generator(number, number))
         assert result[0] == expected_format
 
     def test_small_range(self):
-        """Тест небольшого диапазона."""
+        """Тест небольшого диапазона"""
         numbers = list(card_number_generator(1, 3))
 
         expected = ["0000 0000 0000 0001", "0000 0000 0000 0002", "0000 0000 0000 0003"]
@@ -171,7 +171,7 @@ class TestCardNumberGenerator:
         assert numbers == expected
 
     def test_large_range_first_elements(self):
-        """Тест получения первых элементов большого диапазона."""
+        """Тест получения первых элементов большого диапазона"""
         generator = card_number_generator(1, 1000000)
 
         # Проверяем только первые несколько элементов
@@ -181,22 +181,22 @@ class TestCardNumberGenerator:
 
     def test_edge_cases(self):
         """Тест крайних случаев."""
-        # Минимальное значение
+        # Мин значение
         min_result = list(card_number_generator(1, 1))
         assert min_result == ["0000 0000 0000 0001"]
 
-        # Максимальное значение
+        # Макс значение
         max_result = list(card_number_generator(9999999999999999, 9999999999999999))
         assert max_result == ["9999 9999 9999 9999"]
 
     def test_invalid_range(self):
-        """Тест обработки неверного диапазона."""
+        """Тест обработки неверного диапазона"""
         # start > end
         result = list(card_number_generator(5, 1))
         assert result == []  # Пустой диапазон
 
     def test_zero_start(self):
-        """Тест начала с 0 (не должно быть, но проверим поведение)."""
+        """Тест начала с 0"""
         result = list(card_number_generator(0, 2))
         expected = ["0000 0000 0000 0000", "0000 0000 0000 0001", "0000 0000 0000 0002"]
         assert result == expected
